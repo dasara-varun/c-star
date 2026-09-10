@@ -1,0 +1,4 @@
+fn main() {
+    let ptr: raw *i32 = 0
+    let val: i32 = *ptr
+}

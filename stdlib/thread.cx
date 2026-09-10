@@ -1,0 +1,37 @@
+module thread
+
+use thread_impl
+
+pub struct Thread {
+    inner: BackendThread,
+}
+
+pub struct Mutex {
+    inner: BackendMutex,
+}
+
+impl Mutex {
+    pub fn new() -> Mutex {
+        Mutex { inner: BackendMutex::new() }
+    }
+
+    pub fn lock(self: &Mutex) {
+        self.inner.lock();
+    }
+
+    pub fn unlock(self: &Mutex) {
+        self.inner.unlock();
+    }
+
+    pub fn destroy(self: &Mutex) {
+        self.inner.destroy();
+    }
+}
+
+pub fn spawn(entry_func: raw *u8, param: raw *u8) -> Thread {
+    return Thread { inner: backend_spawn(entry_func, param) }
+}
+
+pub fn join(thread: &Thread) {
+    backend_join(&thread.inner);
+}

@@ -1,0 +1,23 @@
+# Rust build artifacts
+target/
+build_test/
+**/*.rs.bk
+*.pdb
+*.ilk
+*.exe
+*.o
+*.obj
+*.ll
+*.bc
+
+# Local cargo configuration
+.cargo/config.toml
+
+# OS / Editor files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+.vscode/
+.idea/

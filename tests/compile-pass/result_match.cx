@@ -1,0 +1,18 @@
+pub fn safe_divide(a: i32, b: i32) -> Result<i32, string> {
+    if b == 0 {
+        return Err("division by zero")
+    }
+    Ok(a / b)
+}
+
+fn main() -> i32 {
+    match safe_divide(10, 0) {
+        Ok(v) => print(v),
+        Err(e) => print(e),
+    }
+    match safe_divide(10, 2) {
+        Ok(v) => print(v),
+        Err(e) => print(e),
+    }
+    return 0
+}

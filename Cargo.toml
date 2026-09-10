@@ -1,0 +1,22 @@
+[workspace]
+members = [
+    "compiler",
+    "orbit",
+    "cstar-bind",
+    "starfmt",
+    "nova",
+    "star-lsp",
+]
+resolver = "2"
+
+[profile.dev]
+debug = false
+
+[profile.test]
+debug = false
+
+[patch.crates-io]
+inkwell = { path = "./inkwell-patched" }
+inkwell_internals = { path = "./inkwell_internals-patched" }
+
+

@@ -1,0 +1,86 @@
+module main
+
+// Windows Fiber FFI declarations
+pub fn ConvertThreadToFiber(param: raw *u8) -> raw *u8 {
+    return param;
+}
+
+pub fn CreateFiber(stack_size: usize, start_address: raw *u8, parameter: raw *u8) -> raw *u8 {
+    return parameter;
+}
+
+pub fn SwitchToFiber(fiber: raw *u8) {
+}
+
+struct Context {
+    main_fiber: raw *u8,
+    producer_fiber: raw *u8,
+    consumer_fiber: raw *u8,
+    data: i32,
+    has_data: i32,
+    count: i32,
+}
+
+pub fn producer(param: raw *u8) {
+    raw {
+        let ctx: raw *Context = param;
+        while (*ctx).count < 5 {
+            (*ctx).data = (*ctx).count * 10;
+            (*ctx).has_data = 1;
+            print("Producer: produced");
+            print((*ctx).data);
+            (*ctx).count = (*ctx).count + 1;
+            let dest = (*ctx).consumer_fiber;
+            SwitchToFiber(dest);
+        }
+        let dest = (*ctx).main_fiber;
+        SwitchToFiber(dest);
+    }
+}
+
+pub fn consumer(param: raw *u8) {
+    raw {
+        let ctx: raw *Context = param;
+        while true {
+            if (*ctx).has_data == 1 {
+                print("Consumer: consumed");
+                print((*ctx).data);
+                (*ctx).has_data = 0;
+            }
+            let dest = (*ctx).producer_fiber;
+            SwitchToFiber(dest);
+        }
+    }
+}
+
+fn main() -> i32 {
+    let mut ctx = Context {
+        main_fiber: 0,
+        producer_fiber: 0,
+        consumer_fiber: 0,
+        data: 0,
+        has_data: 0,
+        count: 0,
+    };
+    let mut ctx_ptr: raw *Context = 0;
+    raw {
+        ctx_ptr = &ctx;
+    }
+
+    let ctx_ptr_int: usize = ctx_ptr;
+    let ctx_ptr_u8: raw *u8 = ctx_ptr_int;
+
+    let main_f = ConvertThreadToFiber(0);
+    ctx.main_fiber = main_f;
+
+    let prod_f = CreateFiber(0usize, producer, ctx_ptr_u8);
+    ctx.producer_fiber = prod_f;
+
+    let cons_f = CreateFiber(0usize, consumer, ctx_ptr_u8);
+    ctx.consumer_fiber = cons_f;
+
+    print("Main: starting coroutines");
+    SwitchToFiber(prod_f);
+    print("Main: coroutines finished");
+    return 0;
+}

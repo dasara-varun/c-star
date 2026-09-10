@@ -1,0 +1,48 @@
+module main
+
+use thread
+
+struct ThreadContext {
+    mutex: Mutex,
+    count: i32,
+}
+
+pub fn worker(param: raw *u8) {
+    raw {
+        let ctx: raw *ThreadContext = param;
+        let mut i = 0;
+        while i < 500 {
+            (*ctx).mutex.lock();
+            (*ctx).count = (*ctx).count + 1;
+            (*ctx).mutex.unlock();
+            i = i + 1;
+        }
+    }
+}
+
+fn main() -> i32 {
+    let mut ctx = ThreadContext {
+        mutex: Mutex::new(),
+        count: 0,
+    };
+
+    let mut ctx_ptr: raw *ThreadContext = 0;
+    raw {
+        ctx_ptr = &ctx;
+    }
+
+    let ctx_ptr_int: usize = ctx_ptr;
+    let ctx_ptr_u8: raw *u8 = ctx_ptr_int;
+
+    print("Spawning threads...");
+    let t1 = spawn(worker, ctx_ptr_u8);
+    let t2 = spawn(worker, ctx_ptr_u8);
+
+    join(&t1);
+    join(&t2);
+
+    print("Final Count: %d\n", ctx.count);
+
+    ctx.mutex.destroy();
+    return 0;
+}

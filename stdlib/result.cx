@@ -1,0 +1,24 @@
+module result
+
+// Result<T, E> is a compiler builtin; this module provides helper functions.
+
+pub fn is_ok<T, E>(res: Result<T, E>) -> bool {
+    match res {
+        Ok(_) => true,
+        Err(_) => false,
+    }
+}
+
+pub fn is_err<T, E>(res: Result<T, E>) -> bool {
+    match res {
+        Ok(_) => false,
+        Err(_) => true,
+    }
+}
+
+pub fn unwrap_or<T, E>(res: Result<T, E>, default: T) -> T {
+    match res {
+        Ok(v) => v,
+        Err(_) => default,
+    }
+}

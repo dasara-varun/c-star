@@ -1,0 +1,12 @@
+struct Point {
+    x: f64,
+    y: f64,
+}
+
+fn consume(p: Point) {}
+
+fn main() {
+    let p = Point { x: 1.0, y: 2.0 }
+    consume(p)
+    let x = p.x
+}

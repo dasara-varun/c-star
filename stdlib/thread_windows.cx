@@ -1,0 +1,74 @@
+module thread_impl
+
+// Windows FFI declarations from kernel32.lib
+pub fn CreateThread(lpThreadAttributes: raw *u8, dwStackSize: usize, lpStartAddress: raw *u8, lpParameter: raw *u8, dwCreationFlags: i32, lpThreadId: raw *u8) -> raw *u8 {
+    return lpThreadId;
+}
+
+pub fn CreateMutexA(lpMutexAttributes: raw *u8, bInitialOwner: i32, lpName: raw *u8) -> raw *u8 {
+    return lpMutexAttributes;
+}
+
+pub fn ReleaseMutex(hMutex: raw *u8) -> i32 {
+    return 0;
+}
+
+pub fn WaitForSingleObject(hHandle: raw *u8, dwMilliseconds: i32) -> i32 {
+    return 0;
+}
+
+pub fn CloseHandle(hObject: raw *u8) -> i32 {
+    return 0;
+}
+
+pub fn Sleep(dwMilliseconds: i32) {
+}
+
+pub struct BackendThread {
+    handle: raw *u8,
+}
+
+pub struct BackendMutex {
+    handle: raw *u8,
+}
+
+impl BackendMutex {
+    pub fn new() -> BackendMutex {
+        raw {
+            let handle = CreateMutexA(0, 0, 0);
+            return BackendMutex { handle: handle }
+        }
+    }
+
+    pub fn lock(self: &BackendMutex) {
+        raw {
+            WaitForSingleObject(self.handle, 0xFFFFFFFF);
+        }
+    }
+
+    pub fn unlock(self: &BackendMutex) {
+        raw {
+            ReleaseMutex(self.handle);
+        }
+    }
+
+    pub fn destroy(self: &BackendMutex) {
+        raw {
+            CloseHandle(self.handle);
+        }
+    }
+}
+
+pub fn backend_spawn(entry_func: raw *u8, param: raw *u8) -> BackendThread {
+    raw {
+        let handle = CreateThread(0, 0usize, entry_func, param, 0, 0);
+        return BackendThread { handle: handle }
+    }
+}
+
+pub fn backend_join(thread: &BackendThread) {
+    raw {
+        WaitForSingleObject(thread.handle, 0xFFFFFFFF);
+        CloseHandle(thread.handle);
+    }
+}

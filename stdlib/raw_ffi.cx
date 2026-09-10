@@ -1,0 +1,22 @@
+module raw_ffi
+
+// FFI primitives for raw memory access inside raw{} blocks.
+
+pub fn slice_from_raw_parts(ptr: raw *u8, len: usize) -> []u8 {
+    raw {
+        return 0
+    }
+}
+
+pub fn read_u8(ptr: raw *u8) -> u8 {
+    raw {
+        let val: u8 = *ptr
+        return val
+    }
+}
+
+pub fn write_u8(ptr: raw *u8, val: u8) {
+    raw {
+        *ptr = val
+    }
+}

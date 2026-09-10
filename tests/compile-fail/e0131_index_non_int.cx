@@ -1,0 +1,7 @@
+fn get_slice() -> []u8 {
+}
+
+fn main() {
+    let slice = get_slice()
+    let y = slice[1.5]
+}

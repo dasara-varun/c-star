@@ -1,0 +1,10 @@
+use thread
+
+fn worker(arg: raw *u8) {
+}
+
+fn main() {
+    let mut x = 42
+    let ref_x = &x
+    spawn(worker, ref_x)
+}

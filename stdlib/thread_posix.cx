@@ -1,0 +1,96 @@
+module thread_impl
+
+// POSIX FFI declarations from pthread library
+pub fn pthread_create(thread: raw *usize, attr: raw *u8, start_routine: raw *u8, arg: raw *u8) -> i32 {
+    return 0;
+}
+
+pub fn pthread_join(thread: usize, retval: raw *u8) -> i32 {
+    return 0;
+}
+
+pub fn pthread_mutex_init(mutex: raw *u8, attr: raw *u8) -> i32 {
+    return 0;
+}
+
+pub fn pthread_mutex_lock(mutex: raw *u8) -> i32 {
+    return 0;
+}
+
+pub fn pthread_mutex_unlock(mutex: raw *u8) -> i32 {
+    return 0;
+}
+
+pub fn pthread_mutex_destroy(mutex: raw *u8) -> i32 {
+    return 0;
+}
+
+pub fn usleep(useconds: i32) -> i32 {
+    return 0;
+}
+
+pub struct BackendThread {
+    id: usize,
+}
+
+pub struct BackendMutex {
+    // 40 bytes buffer to house pthread_mutex_t on 64-bit Unix targets
+    m0: usize,
+    m1: usize,
+    m2: usize,
+    m3: usize,
+    m4: usize,
+}
+
+impl BackendMutex {
+    pub fn new() -> BackendMutex {
+        let mut m = BackendMutex {
+            m0: 0,
+            m1: 0,
+            m2: 0,
+            m3: 0,
+            m4: 0,
+        };
+        raw {
+            let ptr: raw *u8 = &m;
+            pthread_mutex_init(ptr, 0);
+        }
+        return m
+    }
+
+    pub fn lock(self: &BackendMutex) {
+        raw {
+            let ptr: raw *u8 = self;
+            pthread_mutex_lock(ptr);
+        }
+    }
+
+    pub fn unlock(self: &BackendMutex) {
+        raw {
+            let ptr: raw *u8 = self;
+            pthread_mutex_unlock(ptr);
+        }
+    }
+
+    pub fn destroy(self: &BackendMutex) {
+        raw {
+            let ptr: raw *u8 = self;
+            pthread_mutex_destroy(ptr);
+        }
+    }
+}
+
+pub fn backend_spawn(entry_func: raw *u8, param: raw *u8) -> BackendThread {
+    let mut id = 0usize;
+    raw {
+        let id_ptr: raw *usize = &id;
+        pthread_create(id_ptr, 0, entry_func, param);
+    }
+    return BackendThread { id: id }
+}
+
+pub fn backend_join(thread: &BackendThread) {
+    raw {
+        pthread_join(thread.id, 0);
+    }
+}

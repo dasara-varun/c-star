@@ -1,0 +1,24 @@
+module option
+
+// Option<T> is a compiler builtin; this module provides helper functions.
+
+pub fn is_some<T>(opt: Option<T>) -> bool {
+    match opt {
+        Some(_) => true,
+        None => false,
+    }
+}
+
+pub fn is_none<T>(opt: Option<T>) -> bool {
+    match opt {
+        Some(_) => false,
+        None => true,
+    }
+}
+
+pub fn unwrap_or<T>(opt: Option<T>, default: T) -> T {
+    match opt {
+        Some(v) => v,
+        None => default,
+    }
+}
