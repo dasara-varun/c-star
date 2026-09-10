@@ -1,0 +1,16 @@
+
+        pub fn max<T>(a: T, b: T) -> T {
+            if (a > b) {
+                return a;
+            }
+            return b;
+        }
+
+        fn main() -> i32 {
+            let x: i32 = max(10, 20);
+            let y: f64 = max(3.14, 2.71);
+            print(x);
+            print(y);
+            return 0;
+        }
+        

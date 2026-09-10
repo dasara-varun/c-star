@@ -1,0 +1,40 @@
+
+        module main
+        use thread
+
+        struct Context {
+            mutex: Mutex,
+            val: i32,
+        }
+
+        pub fn worker(param: raw *u8) {
+            raw {
+                let ctx: raw *Context = param;
+                (*ctx).mutex.lock();
+                (*ctx).val = (*ctx).val + 1;
+                (*ctx).mutex.unlock();
+            }
+        }
+
+        fn main() -> i32 {
+            let mut ctx = Context {
+                mutex: Mutex::new(),
+                val: 0,
+            };
+
+            let mut ctx_ptr: raw *Context = 0;
+            raw {
+                ctx_ptr = &ctx;
+            }
+
+            let ctx_ptr_int: usize = ctx_ptr;
+            let ctx_ptr_u8: raw *u8 = ctx_ptr_int;
+
+            let t1 = spawn(worker, ctx_ptr_u8);
+            join(&t1);
+
+            print("Val: %d\n", ctx.val);
+            ctx.mutex.destroy();
+            return 0;
+        }
+        
